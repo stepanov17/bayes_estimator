@@ -65,7 +65,7 @@ def _next_coverage_interval(traps: list[float], integral: float, i_start: int, i
     return next_integral, i_start, i_end
 
 
-def shortest_coverage_interval(pdf: list[float], h: float) -> None:
+def find_shortest_coverage_interval(pdf: list[float], h: float) -> None:
     """
     Calculate and print the shortest coverage interval for the given pdf
     :param pdf: the list of pdf values
@@ -108,7 +108,7 @@ def shortest_coverage_interval(pdf: list[float], h: float) -> None:
     print("shortest coverage interval ".ljust(INDENT) + f"({c1}, {c2}), P = {p_0_pct}")
 
 
-def print_symmetric_coverage_interval(pdf: list[float], x: float, u: float, k: float, h: float) -> None:
+def find_symmetric_coverage_interval(pdf: list[float], x: float, u: float, k: float, h: float) -> None:
     """
     Calculate a symmetric coverage interval for given pdf and print it
     :param pdf: the list of pdf values
@@ -191,12 +191,18 @@ def main(x: float, u: float, x_min: float, w: float, k: float) -> None:
     :param k: a coverage factor to be used to construct the symmetric coverage interval
     """
 
-    # input values checks
-    if not 0 <= x <= 1:
-        raise ValueError(f"invalid x value: {x}")
+    # NOTE: this illustrative application is designed for Bayesian estimation of the coverage interval
+    # near the point x = 1 (assuming x in [0, 1])
+    # to do the same for x near 0 please do the variable change y = 1 - x
+    # for an arbitrary [a, b] please do the obvious linear variable change (depending on the bound considered: a or b)
 
-    if not 0 <= x_min <= 1:
-        raise ValueError(f"invalid c0 value: {x_min}")
+    # input values checks
+    if not 0.5 <= x <= 1:
+        raise ValueError(f"invalid x value: {x}; expecting x to be close to 1 (for x near 0 please consider y = 1 - x)")
+
+    if not 0.5 <= x_min <= 1:
+        raise ValueError(
+            f"invalid c0 value: {x_min}; expecting x to be close to 1 (for x near 0 please consider y = 1 - x)")
 
     if u <= 0:
         raise ValueError(f"invalid (non-positive) uncertainty value: {u}")
@@ -241,8 +247,8 @@ def main(x: float, u: float, x_min: float, w: float, k: float) -> None:
     print(format_parameter_output("mode", mode))
     print(format_parameter_output("stdev", sigma))
 
-    shortest_coverage_interval(pdf, h)
-    print_symmetric_coverage_interval(pdf, x, u, k, h)
+    find_shortest_coverage_interval(pdf, h)
+    find_symmetric_coverage_interval(pdf, x, u, k, h)
     print()
 
 
